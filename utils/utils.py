@@ -26,3 +26,31 @@ def hide_card_number(unhidden_number):
         cut_card_number_left = card_number[:4] + " " + card_number[4:6]
         cut_card_number_right = card_number[-4:]
         return f"{' '.join(split_description[:-1])} {cut_card_number_left}** **** {cut_card_number_right}"
+
+
+def get_main_text(operations, id_list):
+    """Принимает исходные данные в виде списка со словарями (operations)
+    и отсортированную выборку id транзакции (id_list).
+    Возвращает словарь с ключами id (в той же сортировке как на входе),
+    и с текстом для вывода:
+    <дата перевода> <описание перевода> <откуда> -> <куда> <сумма перевода> <валюта>"""
+
+    main_text_dict = {}
+
+    for transaction_id in id_list:
+        main_text_dict[transaction_id] = ''
+
+    for operation in operations:
+        if 'id' in operation.keys() and operation['id'] in id_list:
+            if operation['description'] == 'Открытие вклада':
+                hiden_number_from = ''
+            else:
+                hiden_number_from = hide_card_number(operation['from']) + " -> "
+            hiden_number_to = hide_card_number(operation['to'])
+            main_text_dict[operation['id']] = (f"{'.'.join(reversed((operation['date'][:10]).split('-')))} "
+                                               f"{operation['description']} "
+                                               f"{hiden_number_from}"
+                                               f"{hiden_number_to} "
+                                               f"{operation['operationAmount']['amount']} "
+                                               f"{operation['operationAmount']['currency']['name']}")
+    return main_text_dict
