@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 
 def load_json():
@@ -54,3 +55,18 @@ def get_main_text(operations, id_list):
                                                f"{operation['operationAmount']['amount']} "
                                                f"{operation['operationAmount']['currency']['name']}")
     return main_text_dict
+
+
+def get_sorted_id(operations):
+    """Получает исходные данные в виде списка со словарями,
+    возвращает список (id) последних 5 выполненых транзакций,
+    отсортированных по дате"""
+    correct_operations = operations.copy()
+    correct_operations.remove({})
+    sorted_list = sorted(correct_operations, key=lambda x:
+                         datetime.strptime(x['date'][:19], '%Y-%m-%dT%H:%M:%S'), reverse=True)
+    id_list = []
+    for item in sorted_list:
+        if len(id_list) < 5 and item['state'] == 'EXECUTED':
+            id_list.append(item['id'])
+    return id_list
