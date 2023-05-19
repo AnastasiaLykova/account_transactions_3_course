@@ -62,7 +62,9 @@ def get_sorted_id(operations):
     возвращает список (id) последних 5 выполненых транзакций,
     отсортированных по дате"""
     correct_operations = operations.copy()
-    correct_operations.remove({})
+    if {} in correct_operations:
+        correct_operations.remove({})
+
     sorted_list = sorted(correct_operations, key=lambda x:
                          datetime.strptime(x['date'][:19], '%Y-%m-%dT%H:%M:%S'), reverse=True)
     id_list = []
